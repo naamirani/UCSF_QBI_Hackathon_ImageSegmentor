@@ -5,6 +5,16 @@ from matplotlib import pyplot as plt
 # Read image, make gray scale, threshold to binary
 img = cv.imread('mouse_brain-one_FOV.tif')
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+
+# How we got "objects" in an image - apply Gaussian blur, use distance map from transforming the resulting thresholded image
+# then count blobs
+blur = cv.GaussianBlur(gray,(5,5),0)
+ret3,im_gau = cv.threshold(blur,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
+distance_gau = ndimage.distance_transform_edt(im_gau)
+blobs_centres_gau = (distance_gau > 0.4 * distance_gau.max())
+
+
 ret, thresh = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)
 
 plt.figure("Watershed Segmentation")
